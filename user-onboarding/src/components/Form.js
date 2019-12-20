@@ -4,6 +4,9 @@ import {withFormik, Form, Field} from 'formik';
 import * as Yup from 'yup';
 
 const UserForm = ({values, errors, touched, status}) => {
+    console.log("values", values);
+    console.log("errors", errors);
+    console.log("touched", touched);
     const [users, setUsers] = useState([]);
     useEffect(() => {
         console.log("status has changed", status);
@@ -27,37 +30,41 @@ const UserForm = ({values, errors, touched, status}) => {
                 <label htmlFor="tos">I agree to the Terms of Service</label><br />{touched.tos && errors.tos && (<p>{errors.tos}</p>)}
                 <button type="submit">Submit</button>
             </Form>
-            {users.map(user => (
-                <ul key={user.id}>
-                    <li>Name: {user.name}</li>
-                    <li>Email: {user.email}</li>
-                    {/* <li>Password: {user.password}</li> */}
-                    {/* <li>Role: {user.role}</li> */}
-                </ul>
-            ))}
+            {users.map(user => {
+                return(
+                    <ul key={user.id}>
+                        <li>Name: {user.name}</li>
+                        <li>Email: {user.email}</li>
+                        <li>Password: {user.password}</li>
+                        {/* <li>Role: {user.role}</li> */}
+                    </ul>
+                )
+                
+            })}
         </div>
     );
 };
 
 const FormikUserForm = withFormik({
-    mapPropsToValues({
-        name,
-        email,
-        password,
-        tos
-    }) {
+    // mapPropsToValues({
+    //     name,
+    //     email,
+    //     password,
+    //     tos
+    // }) {
+    mapPropsToValues(props) {
         return {
-            name: "",
-            email: "",
-            password: "",
-            tos: tos || false
+            name: props.name || "",
+            email: props.email || "",
+            password: props.password || "",
+            tos: props.tos || false
         };
     },
     validationSchema: Yup.object().shape({
         name: Yup.string().required("Please enter your name"),
         email: Yup.string().required("Please enter your email"),
         password: Yup.string().required("Please enter your password"),
-        role: Yup.string().oneOf(["a", "b", "c"]).required("Please choose one"),
+        // role: Yup.string().oneOf(["a", "b", "c"]).required("Please choose one"),
         tos: Yup.boolean().oneOf([true], "Please indicate that you have read the Terms of Service")
     }),
     handleSubmit(values, {setStatus, resetForm}) {
